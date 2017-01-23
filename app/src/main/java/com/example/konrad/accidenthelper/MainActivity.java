@@ -1,19 +1,34 @@
 package com.example.konrad.accidenthelper;
 
 
-        import android.content.Context;
-        import android.graphics.Color;
-        import android.hardware.Sensor;
-        import android.hardware.SensorEvent;
-        import android.hardware.SensorEventListener;
-        import android.hardware.SensorManager;
-        import android.media.MediaRecorder;
-        import android.os.Handler;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.widget.TextView;
+import android.content.Context;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.MediaRecorder;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
-        import java.io.IOException;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -37,7 +52,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static final float G = SensorManager.GRAVITY_EARTH;
     public static final double REFRENCE_AMPLITUDE = Math.pow(10, Math.exp(-7));
     public static final float magnitudeAccThreshold = 1 * SensorManager.GRAVITY_EARTH;
-    public static final int dBValueThreshold = 80;
+    public static final int dBValueThreshold = 60;
+
+    private static final String SERVER_URL = "http://104.131.161.226:8000/api/incidents/";
+    private static final String KEY_TOKEN = "Authorization";
+    private static final String KEY_LONGITUDE = "longitude";
+    private static final String KEY_LATITUDE = "latitude";
+    private static final String KEY_VOLUME = "volume";
+    private static final String KEY_MAX_ACCELERATION_MAGNITUDE = "max_acceleration_magnitude";
 
     private double dBValue;
 
@@ -174,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if (magnitudeAcc > magnitudeAccThreshold && dBValue > dBValueThreshold) {
             accidentDetectionFlag = true;
+            sendData();
         }
 
         // get the change of the x,y,z values of the accelerometer
@@ -198,6 +221,67 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    private void sendData() {
+        final String token = "Token 8f12919ffe3caa4eb20a594dc4bc460765fc9423";
+        final String longitude = "54.12343";
+        final String latitude = "45.34123";
+        final String volume = String.valueOf(dBValue);
+        final String max_acceleration_magnitude = String.valueOf(magnitudeAcc);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, SERVER_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+//                        Toast.makeText(MainActivity.this, response, Toast.LENGTH_LONG).show();
+//                        System.out.println(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+//                        Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                        String message = null;
+                        if (volleyError instanceof NetworkError) {
+                            message = "Cannot connect to Internet...Please check your connection!";
+                        } else if (volleyError instanceof ServerError) {
+                            message = "The server could not be found. Please try again after some time!!";
+                        } else if (volleyError instanceof AuthFailureError) {
+                            message = "Cannot connect to Internet...Please check your connection!";
+                        } else if (volleyError instanceof ParseError) {
+                            message = "Parsing error! Please try again after some time!!";
+                        } else if (volleyError instanceof NoConnectionError) {
+                            message = "Cannot connect to Internet...Please check your connection!";
+                        } else if (volleyError instanceof TimeoutError) {
+                            message = "Connection TimeOut! Please check your internet connection.";
+                        }
+                        System.out.println(message);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY_LONGITUDE, longitude);
+                params.put(KEY_LATITUDE, latitude);
+                params.put(KEY_VOLUME, volume);
+                params.put(KEY_MAX_ACCELERATION_MAGNITUDE, max_acceleration_magnitude);
+                return params;
+            }
+
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put(KEY_TOKEN, token);
+                headers.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+                return headers;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 
 
