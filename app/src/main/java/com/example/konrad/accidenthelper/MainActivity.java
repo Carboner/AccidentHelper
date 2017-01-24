@@ -2,14 +2,20 @@ package com.example.konrad.accidenthelper;
 
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
@@ -30,9 +36,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
 
-    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, maxMagnitudeAccView, accidentDetectionFlagView, dBValueView;
+    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, maxMagnitudeAccView, accidentDetectionFlagView, dBValueView, changeL, changeW;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -46,6 +52,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float deltaZMax;
     private float magnitudeAccMax;
     private float magnitudeAcc;
+
+    LocationManager lm;
+    Criteria kr;
+    Location loc;
+    String najlepszyDostawca;
 
     private boolean accidentDetectionFlag;
 
@@ -104,6 +115,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             };
             runner.start();
         }
+        kr = new Criteria();
+        lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        refresh();
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            ;
+
+        lm.requestLocationUpdates(najlepszyDostawca, 1000, 1, this);
     }
 
     protected void onResume() {
@@ -122,6 +142,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         currentX = (TextView) findViewById(R.id.currentX);
         currentY = (TextView) findViewById(R.id.currentY);
         currentZ = (TextView) findViewById(R.id.currentZ);
+
+        changeL = (TextView) findViewById(R.id.changeL);
+        changeW = (TextView) findViewById(R.id.changeW);
 
         maxX = (TextView) findViewById(R.id.maxX);
         maxY = (TextView) findViewById(R.id.maxY);
@@ -178,19 +201,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         displayCurrentValues();
         displayMaxValues();
 
-//        final float alpha = 0.8f;
-//
-//        float[] gravity = new float[]{0, 0, 0};
-//
-//        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-//        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-//        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-//
-//        float[] linear_acceleration = new float[]{0, 0, 0};
-//
-//        linear_acceleration[0] = event.values[0] - gravity[0];
-//        linear_acceleration[1] = event.values[1] - gravity[1];
-//        linear_acceleration[2] = event.values[2] - gravity[2];
+        final float alpha = 0.8f;
+
+        float[] gravity = new float[]{0, 0, 0};
+
+        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+        float[] linear_acceleration = new float[]{0, 0, 0};
+
+        linear_acceleration[0] = event.values[0] - gravity[0];
+        linear_acceleration[1] = event.values[1] - gravity[1];
+        linear_acceleration[2] = event.values[2] - gravity[2];
 
         magnitudeAcc = ((float) Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2])) - G;
 
@@ -330,5 +353,49 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         double amp = getAmplitude();
         mEMA = EMA_FILTER * amp + (1.0 - EMA_FILTER) * mEMA;
         return mEMA;
+    }
+    private void refresh() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            ;
+
+        najlepszyDostawca = lm.getBestProvider(kr, true);
+        loc = lm.getLastKnownLocation(najlepszyDostawca);
+
+    }
+
+    public void displayLocalization() {
+        changeL.setText(Double.toString(loc.getLongitude()));
+
+        changeW.setText(Double.toString(loc.getLatitude()));
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        refresh();
+        displayLocalization();
+        //t4.setText(t4.getText()+""+loc.getLongitude()+"/"+loc.getLatitude()+"\n");
+
+    }
+
+
+
+    //LocationListener
+    @Override
+    public void onProviderDisabled(String provider) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        // TODO Auto-generated method stub
+
     }
 }
