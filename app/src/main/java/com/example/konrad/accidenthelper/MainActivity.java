@@ -201,19 +201,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         displayCurrentValues();
         displayMaxValues();
 
-        final float alpha = 0.8f;
-
-        float[] gravity = new float[]{0, 0, 0};
-
-        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-
-        float[] linear_acceleration = new float[]{0, 0, 0};
-
-        linear_acceleration[0] = event.values[0] - gravity[0];
-        linear_acceleration[1] = event.values[1] - gravity[1];
-        linear_acceleration[2] = event.values[2] - gravity[2];
+//        final float alpha = 0.8f;
+//
+//        float[] gravity = new float[]{0, 0, 0};
+//
+//        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+//        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+//        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+//
+//        float[] linear_acceleration = new float[]{0, 0, 0};
+//
+//        linear_acceleration[0] = event.values[0] - gravity[0];
+//        linear_acceleration[1] = event.values[1] - gravity[1];
+//        linear_acceleration[2] = event.values[2] - gravity[2];
 
         magnitudeAcc = ((float) Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2])) - G;
 
@@ -248,8 +248,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void sendData() {
         final String token = "Token 8f12919ffe3caa4eb20a594dc4bc460765fc9423";
-        final String longitude = "54.12343";
-        final String latitude = "45.34123";
+        final String longitude = String.valueOf(loc.getLongitude());
+        final String latitude = String.valueOf(loc.getLatitude());
         final String volume = String.valueOf(dBValue);
         final String max_acceleration_magnitude = String.valueOf(magnitudeAcc);
 
@@ -354,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mEMA = EMA_FILTER * amp + (1.0 - EMA_FILTER) * mEMA;
         return mEMA;
     }
+
     private void refresh() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -378,7 +379,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //t4.setText(t4.getText()+""+loc.getLongitude()+"/"+loc.getLatitude()+"\n");
 
     }
-
 
 
     //LocationListener
