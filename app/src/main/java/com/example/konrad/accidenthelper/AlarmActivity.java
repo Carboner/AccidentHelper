@@ -1,8 +1,10 @@
 package com.example.konrad.accidenthelper;
 
+import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -36,7 +38,9 @@ public class AlarmActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 timeView.setTextSize(35);
-                timeView.setText("Message was sent");
+                timeView.setText("Message sent");
+
+                sendSMS();
 
             }
         };
@@ -50,5 +54,14 @@ public class AlarmActivity extends AppCompatActivity {
             finish();
         }
 
+    }
+    protected void sendSMS() {
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage("510228447", null, "wypadek", null, null);
+
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+
+        sendIntent.setType("vnd.android-dir/mms-sms");
+        startActivity(sendIntent);
     }
 }
