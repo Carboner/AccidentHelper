@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         magnitudeAcc = ((float) Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2])) - G;
 
-        if (magnitudeAcc > magnitudeAccThreshold) {
+        if (magnitudeAcc > magnitudeAccThreshold && dBValue > dBValueThreshold) {
             accidentDetectionFlag = true;
             sendData();
             startAlarmActivity();
