@@ -2,6 +2,7 @@ package com.example.konrad.accidenthelper;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -18,16 +19,12 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -129,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        accidentDetectionFlag = false;
         startRecorder();
     }
 
@@ -201,25 +199,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         displayCurrentValues();
         displayMaxValues();
 
-//        final float alpha = 0.8f;
-//
-//        float[] gravity = new float[]{0, 0, 0};
-//
-//        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-//        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-//        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-//
-//        float[] linear_acceleration = new float[]{0, 0, 0};
-//
-//        linear_acceleration[0] = event.values[0] - gravity[0];
-//        linear_acceleration[1] = event.values[1] - gravity[1];
-//        linear_acceleration[2] = event.values[2] - gravity[2];
-
         magnitudeAcc = ((float) Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2])) - G;
 
-        if (magnitudeAcc > magnitudeAccThreshold && dBValue > dBValueThreshold) {
+        if (magnitudeAcc > magnitudeAccThreshold) {
             accidentDetectionFlag = true;
             sendData();
+            startAlarmActivity();
         }
 
         // get the change of the x,y,z values of the accelerometer
@@ -246,10 +231,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
+    private void startAlarmActivity() {
+        Intent intentAlarmActivity = new Intent(this, AlarmActivity.class);
+        startActivity(intentAlarmActivity);
+    }
+
     private void sendData() {
         final String token = "Token 8f12919ffe3caa4eb20a594dc4bc460765fc9423";
-        final String longitude = String.valueOf(loc.getLongitude());
-        final String latitude = String.valueOf(loc.getLatitude());
+        final String longitude;
+        final String latitude;
+
+        if (loc != null) {
+            longitude = String.valueOf(loc.getLongitude());
+            latitude = String.valueOf(loc.getLatitude());
+        } else {
+            longitude = "0";
+            latitude = "0";
+        }
+
         final String volume = String.valueOf(dBValue);
         final String max_acceleration_magnitude = String.valueOf(magnitudeAcc);
 
@@ -264,22 +263,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-//                        Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-                        String message = null;
-                        if (volleyError instanceof NetworkError) {
-                            message = "Cannot connect to Internet...Please check your connection!";
-                        } else if (volleyError instanceof ServerError) {
-                            message = "The server could not be found. Please try again after some time!!";
-                        } else if (volleyError instanceof AuthFailureError) {
-                            message = "Cannot connect to Internet...Please check your connection!";
-                        } else if (volleyError instanceof ParseError) {
-                            message = "Parsing error! Please try again after some time!!";
-                        } else if (volleyError instanceof NoConnectionError) {
-                            message = "Cannot connect to Internet...Please check your connection!";
-                        } else if (volleyError instanceof TimeoutError) {
-                            message = "Connection TimeOut! Please check your internet connection.";
-                        }
-                        System.out.println(message);
+                        Toast.makeText(MainActivity.this, volleyError.toString(), Toast.LENGTH_LONG).show();
                     }
                 }) {
             @Override
