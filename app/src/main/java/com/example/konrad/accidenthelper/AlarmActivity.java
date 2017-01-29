@@ -33,6 +33,7 @@ public class AlarmActivity extends AppCompatActivity {
     private String latitudeIntent;
     private String volumeIntent;
     private String max_acceleration_magnitude_Intent;
+    private String speed;
 
 
     private static final String SERVER_URL = "http://104.131.161.226:8000/api/incidents/";
@@ -51,7 +52,7 @@ public class AlarmActivity extends AppCompatActivity {
         latitudeIntent = intent.getStringExtra(MainActivity.KEY_LATITUDE);
         volumeIntent = intent.getStringExtra(MainActivity.KEY_VOLUME);
         max_acceleration_magnitude_Intent = intent.getStringExtra(MainActivity.KEY_MAX_ACCELERATION_MAGNITUDE);
-
+        speed = intent.getStringExtra(MainActivity.SPEED);
 
         startTimer();
     }
@@ -86,8 +87,11 @@ public class AlarmActivity extends AppCompatActivity {
     }
 
     protected void sendSMS() {
+        final String longitude = longitudeIntent;
+        final String latitude = latitudeIntent;
+
         SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage("510228447", null, "wypadek", null, null);
+        smsManager.sendTextMessage("510228447", null, "wypadek w "+longitude+" "+latitude+" z predkością "+speed, null, null);
 
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
 

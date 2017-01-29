@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static final String KEY_LATITUDE = "latitude";
     public static final String KEY_VOLUME = "volume";
     public static final String KEY_MAX_ACCELERATION_MAGNITUDE = "max_acceleration_magnitude";
+    public static final String SPEED = "speed";
 
     private double dBValue;
 
@@ -209,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         intentAlarmActivity.putExtra(KEY_LATITUDE, String.valueOf(l2));
         intentAlarmActivity.putExtra(KEY_VOLUME, String.valueOf(dBValue));
         intentAlarmActivity.putExtra(KEY_MAX_ACCELERATION_MAGNITUDE, String.valueOf(magnitudeAcc));
+        intentAlarmActivity.putExtra(SPEED, String.valueOf(speed));
         startActivity(intentAlarmActivity);
     }
 
