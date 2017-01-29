@@ -297,15 +297,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     //predkosc
-    float locationSpeed() {
+    public float locationSpeed() {
         if (loc.hasSpeed()) {
             speed = loc.getSpeed() * 3.6f;
+
         }
         return speed;
     }
 
     public void displaySpeed() {
-        speedV.setText(Float.toString(loc.getSpeed()));
+        speedV.setText(Float.toString(speed));
 
     }
 
