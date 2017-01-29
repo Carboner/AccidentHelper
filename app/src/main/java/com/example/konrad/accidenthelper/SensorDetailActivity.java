@@ -17,15 +17,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.widget.TextView;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
+public class SensorDetailActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
+
+    private TextView maxX, maxY, maxZ, maxMagnitudeAccView, dBValueView, changeL, changeW, speedV;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
 
+    private float lastX, lastY, lastZ;
+    private float deltaX;
+    private float deltaY;
+    private float deltaZ;
+    private float deltaXMax;
+    private float deltaYMax;
+    private float deltaZMax;
+    private float magnitudeAccMax;
     private float magnitudeAcc;
     private int countAccidentFlag;
 
@@ -40,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static final double REFRENCE_AMPLITUDE = Math.pow(10, Math.exp(-7));
     public static final float MAGNITUDE_ACC_THRESHOLD = 1 * SensorManager.GRAVITY_EARTH;
     public static final int dB_VALUE_THRESHOLD = 60;
-    public static final int SPEED_THRESHOLD = -1;
+    public static final int SPEED_THRESHOLD = 25;
 
     public static final String KEY_LONGITUDE = "longitude";
     public static final String KEY_LATITUDE = "latitude";
@@ -66,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_sensor_detail);
+        initializeViews();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
@@ -115,28 +125,79 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         stopRecorder();
     }
 
-    public void onClickSettings(View view) {
-        Intent intentSettingsActivity = new Intent(this, SettingsActivity.class);
-        startActivity(intentSettingsActivity);
+    public void initializeViews() {
+
+
+        changeL = (TextView) findViewById(R.id.changeL);
+        changeW = (TextView) findViewById(R.id.changeW);
+
+        speedV = (TextView) findViewById(R.id.speedV);
+
+        maxX = (TextView) findViewById(R.id.maxX);
+        maxY = (TextView) findViewById(R.id.maxY);
+        maxZ = (TextView) findViewById(R.id.maxZ);
+
+
+        maxMagnitudeAccView = (TextView) findViewById(R.id.maxMagnitudeAcc);
+        dBValueView = (TextView) findViewById(R.id.statusDB);
     }
 
-    public void onClickSensorDetails(View view) {
-        Intent intentSensorDetailActivity = new Intent(this, SensorDetailActivity.class);
-        startActivity(intentSensorDetailActivity);
+
+    // display the max x,y,z accelerometer values
+    public void displayMaxValues() {
+
+        if (deltaX > deltaXMax) {
+            deltaXMax = deltaX;
+            maxX.setText(Float.toString(deltaXMax));
+        }
+        if (deltaY > deltaYMax) {
+            deltaYMax = deltaY;
+            maxY.setText(Float.toString(deltaYMax));
+        }
+        if (deltaZ > deltaZMax) {
+            deltaZMax = deltaZ;
+            maxZ.setText(Float.toString(deltaZMax));
+        }
+
+//        if (magnitudeAcc > magnitudeAccMax) {
+//            magnitudeAccMax = magnitudeAcc;
+        maxMagnitudeAccView.setText(Float.toString(magnitudeAcc));
+//        }
     }
+
 
     @Override
     public void onSensorChanged(SensorEvent event) {
 
+        displayMaxValues();
+
         magnitudeAcc = ((float) Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2])) - G;
 
         if (magnitudeAcc > MAGNITUDE_ACC_THRESHOLD && dBValue > dB_VALUE_THRESHOLD && speed > SPEED_THRESHOLD) {
-
             countAccidentFlag++;
             if (countAccidentFlag == 1) {
                 startAlarmActivity();
             }
         }
+
+        // get the change of the x,y,z values of the accelerometer
+        deltaX = Math.abs(lastX - event.values[0]);
+        deltaY = Math.abs(lastY - event.values[1]);
+        deltaZ = Math.abs(lastZ - event.values[2]);
+
+        // if the change is below 2, it is just plain noise
+        if (deltaX < 2)
+            deltaX = 0;
+        if (deltaY < 2)
+            deltaY = 0;
+        if (deltaZ < 2)
+            deltaZ = 0;
+
+        // set the last know values of x,y,z
+        lastX = event.values[0];
+        lastY = event.values[1];
+        lastZ = event.values[2];
+
     }
 
     @Override
@@ -181,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void updateTv() {
         dBValue = soundDb(REFRENCE_AMPLITUDE);
+        dBValueView.setText(String.format("%.2f dB", dBValue));
     }
 
     public double soundDb(double ampl) {
@@ -210,10 +272,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    public void displayLocalization() {
+        changeL.setText(Double.toString(loc.getLongitude()));
+
+        changeW.setText(Double.toString(loc.getLatitude()));
+    }
+
 
     @Override
     public void onLocationChanged(Location location) {
         refresh();
+        displayLocalization();
+        displaySpeed();
         //predkosc
         locationSpeed();
         if (loc != null) {
@@ -223,16 +293,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             l1 = 0;
             l2 = 0;
         }
+
+        //t4.setText(t4.getText()+""+loc.getLongitude()+"/"+loc.getLatitude()+"\n");
+
     }
 
     //predkosc
     public float locationSpeed() {
         if (loc.hasSpeed()) {
             speed = loc.getSpeed() * 3.6f;
+
         }
         return speed;
     }
 
+    public void displaySpeed() {
+        speedV.setText(Float.toString(speed));
+
+    }
 
     //LocationListener
     @Override
@@ -251,5 +329,4 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // TODO Auto-generated method stub
 
     }
-
 }

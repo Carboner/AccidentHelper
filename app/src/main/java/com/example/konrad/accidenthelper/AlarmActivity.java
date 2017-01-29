@@ -1,9 +1,11 @@
 package com.example.konrad.accidenthelper;
 
 import android.content.Intent;
-import android.os.CountDownTimer;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +37,9 @@ public class AlarmActivity extends AppCompatActivity {
     private String max_acceleration_magnitude_Intent;
     private String speed;
 
+    private String phone1;
+    private String phone2;
+
 
     private static final String SERVER_URL = "http://104.131.161.226:8000/api/incidents/";
     private static final String KEY_TOKEN = "Authorization";
@@ -53,6 +58,10 @@ public class AlarmActivity extends AppCompatActivity {
         volumeIntent = intent.getStringExtra(MainActivity.KEY_VOLUME);
         max_acceleration_magnitude_Intent = intent.getStringExtra(MainActivity.KEY_MAX_ACCELERATION_MAGNITUDE);
         speed = intent.getStringExtra(MainActivity.SPEED);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        phone1 = prefs.getString("phone_1", "default_number");
+//        phone2 = prefs.getString("phone_2", "default_number");
 
         startTimer();
     }
@@ -91,7 +100,7 @@ public class AlarmActivity extends AppCompatActivity {
         final String latitude = latitudeIntent;
 
         SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage("510228447", null, "wypadek w "+longitude+" "+latitude+" z predkością "+speed, null, null);
+        smsManager.sendTextMessage(phone1, null, "wypadek w " + longitude + " " + latitude + " z predkością " + speed, null, null);
 
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
 
