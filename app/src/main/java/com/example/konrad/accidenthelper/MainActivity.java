@@ -4,7 +4,6 @@ package com.example.konrad.accidenthelper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,19 +18,8 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
 
@@ -49,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float deltaZMax;
     private float magnitudeAccMax;
     private float magnitudeAcc;
+    private int countAccidentFlag;
 
     LocationManager lm;
     Criteria kr;
@@ -57,18 +46,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     double difference, l1, l2, l3, l4;
     float speed;
 
-
     public static final float G = SensorManager.GRAVITY_EARTH;
     public static final double REFRENCE_AMPLITUDE = Math.pow(10, Math.exp(-7));
     public static final float magnitudeAccThreshold = 1 * SensorManager.GRAVITY_EARTH;
     public static final int dBValueThreshold = 60;
 
-    private static final String SERVER_URL = "http://104.131.161.226:8000/api/incidents/";
-    private static final String KEY_TOKEN = "Authorization";
-    private static final String KEY_LONGITUDE = "longitude";
-    private static final String KEY_LATITUDE = "latitude";
-    private static final String KEY_VOLUME = "volume";
-    private static final String KEY_MAX_ACCELERATION_MAGNITUDE = "max_acceleration_magnitude";
+    public static final String KEY_LONGITUDE = "longitude";
+    public static final String KEY_LATITUDE = "latitude";
+    public static final String KEY_VOLUME = "volume";
+    public static final String KEY_MAX_ACCELERATION_MAGNITUDE = "max_acceleration_magnitude";
 
     private double dBValue;
 
@@ -127,8 +113,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-
         startRecorder();
+        countAccidentFlag = 0;
     }
 
     protected void onPause() {
@@ -153,8 +139,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         maxMagnitudeAccView = (TextView) findViewById(R.id.maxMagnitudeAcc);
         dBValueView = (TextView) findViewById(R.id.statusDB);
     }
-
-
 
 
     // display the max x,y,z accelerometer values
@@ -188,10 +172,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         magnitudeAcc = ((float) Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2])) - G;
 
-        if (magnitudeAcc > magnitudeAccThreshold && dBValue > dBValueThreshold) {
-
-            sendData();
-            startAlarmActivity();
+        if (magnitudeAcc > magnitudeAccThreshold && dBValue > dBValueThreshold && speed > 25) {
+            countAccidentFlag++;
+            if (countAccidentFlag == 1) {
+                startAlarmActivity();
+            }
         }
 
         // get the change of the x,y,z values of the accelerometer
@@ -220,62 +205,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void startAlarmActivity() {
         Intent intentAlarmActivity = new Intent(this, AlarmActivity.class);
+        intentAlarmActivity.putExtra(KEY_LONGITUDE, String.valueOf(l1));
+        intentAlarmActivity.putExtra(KEY_LATITUDE, String.valueOf(l2));
+        intentAlarmActivity.putExtra(KEY_VOLUME, String.valueOf(dBValue));
+        intentAlarmActivity.putExtra(KEY_MAX_ACCELERATION_MAGNITUDE, String.valueOf(magnitudeAcc));
         startActivity(intentAlarmActivity);
-    }
-
-    private void sendData() {
-        final String token = "Token 8f12919ffe3caa4eb20a594dc4bc460765fc9423";
-        final String longitude;
-        final String latitude;
-
-        if (loc != null) {
-            longitude = String.valueOf(loc.getLongitude());
-            latitude = String.valueOf(loc.getLatitude());
-        } else {
-            longitude = "0";
-            latitude = "0";
-        }
-
-        final String volume = String.valueOf(dBValue);
-        final String max_acceleration_magnitude = String.valueOf(magnitudeAcc);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, SERVER_URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-//                        Toast.makeText(MainActivity.this, response, Toast.LENGTH_LONG).show();
-//                        System.out.println(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Toast.makeText(MainActivity.this, volleyError.toString(), Toast.LENGTH_LONG).show();
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY_LONGITUDE, longitude);
-                params.put(KEY_LATITUDE, latitude);
-                params.put(KEY_VOLUME, volume);
-                params.put(KEY_MAX_ACCELERATION_MAGNITUDE, max_acceleration_magnitude);
-                return params;
-            }
-
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put(KEY_TOKEN, token);
-                headers.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-                return headers;
-            }
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
     }
 
 
@@ -350,18 +284,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         displaySpeed();
         //predkosc
         locationSpeed();
-        l1 = loc.getLongitude();
-        l2 = loc.getLatitude();
+        if (loc != null) {
+            l1 = loc.getLongitude();
+            l2 = loc.getLatitude();
+        } else {
+            l1 = 0;
+            l2 = 0;
+        }
+
         //t4.setText(t4.getText()+""+loc.getLongitude()+"/"+loc.getLatitude()+"\n");
 
     }
-//predkosc
+
+    //predkosc
     float locationSpeed() {
-        if(loc.hasSpeed()) {
-            speed = loc.getSpeed();
+        if (loc.hasSpeed()) {
+            speed = loc.getSpeed() * 3.6f;
         }
         return speed;
     }
+
     public void displaySpeed() {
         speedV.setText(Float.toString(loc.getSpeed()));
 
