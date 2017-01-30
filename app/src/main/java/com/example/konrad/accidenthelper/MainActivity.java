@@ -131,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         magnitudeAcc = ((float) Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2])) - G;
 
         if (magnitudeAcc > MAGNITUDE_ACC_THRESHOLD && dBValue > dB_VALUE_THRESHOLD && speed > SPEED_THRESHOLD) {
-
             countAccidentFlag++;
             if (countAccidentFlag == 1) {
                 startAlarmActivity();

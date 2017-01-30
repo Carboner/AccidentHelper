@@ -1,12 +1,13 @@
 package com.example.konrad.accidenthelper;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -39,7 +40,7 @@ public class AlarmActivity extends AppCompatActivity {
 
     private String phone1;
     private String phone2;
-
+    private Boolean sendSMSBool;
 
     private static final String SERVER_URL = "http://104.131.161.226:8000/api/incidents/";
     private static final String KEY_TOKEN = "Authorization";
@@ -59,9 +60,14 @@ public class AlarmActivity extends AppCompatActivity {
         max_acceleration_magnitude_Intent = intent.getStringExtra(MainActivity.KEY_MAX_ACCELERATION_MAGNITUDE);
         speed = intent.getStringExtra(MainActivity.SPEED);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        phone1 = prefs.getString("phone_1", "default_number");
-//        phone2 = prefs.getString("phone_2", "default_number");
+        SharedPreferences sharedPreferences = getSharedPreferences(SettingsActivity.PREFERENCES_FILE, Context.MODE_PRIVATE);
+        phone1 = sharedPreferences.getString("phone_1", null);
+        phone2 = sharedPreferences.getString("phone_2", null);
+        sendSMSBool = sharedPreferences.getBoolean("sendSMSWarning", false);
+
+        Log.d("AlarmActivity", phone1);
+        Log.d("AlarmActivity", phone2);
+        Log.d("AlarmActivity", String.valueOf(sendSMSBool));
 
         startTimer();
     }
@@ -79,7 +85,10 @@ public class AlarmActivity extends AppCompatActivity {
                 timeView.setText("Message sent");
 
                 sendData();
-                sendSMS();
+
+                if (sendSMSBool) {
+                    sendSMS();
+                }
 
             }
         };

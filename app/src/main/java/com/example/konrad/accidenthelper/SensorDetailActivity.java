@@ -46,18 +46,6 @@ public class SensorDetailActivity extends AppCompatActivity implements SensorEve
     double difference, l1, l2, l3, l4;
     float speed;
 
-    public static final float G = SensorManager.GRAVITY_EARTH;
-    public static final double REFRENCE_AMPLITUDE = Math.pow(10, Math.exp(-7));
-    public static final float MAGNITUDE_ACC_THRESHOLD = 1 * SensorManager.GRAVITY_EARTH;
-    public static final int dB_VALUE_THRESHOLD = 60;
-    public static final int SPEED_THRESHOLD = 25;
-
-    public static final String KEY_LONGITUDE = "longitude";
-    public static final String KEY_LATITUDE = "latitude";
-    public static final String KEY_VOLUME = "volume";
-    public static final String KEY_MAX_ACCELERATION_MAGNITUDE = "max_acceleration_magnitude";
-    public static final String SPEED = "speed";
-
     private double dBValue;
 
     private MediaRecorder mRecorder;
@@ -126,8 +114,6 @@ public class SensorDetailActivity extends AppCompatActivity implements SensorEve
     }
 
     public void initializeViews() {
-
-
         changeL = (TextView) findViewById(R.id.changeL);
         changeW = (TextView) findViewById(R.id.changeW);
 
@@ -137,26 +123,24 @@ public class SensorDetailActivity extends AppCompatActivity implements SensorEve
         maxY = (TextView) findViewById(R.id.maxY);
         maxZ = (TextView) findViewById(R.id.maxZ);
 
-
         maxMagnitudeAccView = (TextView) findViewById(R.id.maxMagnitudeAcc);
         dBValueView = (TextView) findViewById(R.id.statusDB);
     }
-
 
     // display the max x,y,z accelerometer values
     public void displayMaxValues() {
 
         if (deltaX > deltaXMax) {
             deltaXMax = deltaX;
-            maxX.setText(Float.toString(deltaXMax));
+            maxX.setText(String.format("%.3f", deltaXMax));
         }
         if (deltaY > deltaYMax) {
             deltaYMax = deltaY;
-            maxY.setText(Float.toString(deltaYMax));
+            maxY.setText(String.format("%.3f", deltaYMax));
         }
         if (deltaZ > deltaZMax) {
             deltaZMax = deltaZ;
-            maxZ.setText(Float.toString(deltaZMax));
+            maxZ.setText(String.format("%.3f", deltaZMax));
         }
 
 //        if (magnitudeAcc > magnitudeAccMax) {
@@ -171,21 +155,20 @@ public class SensorDetailActivity extends AppCompatActivity implements SensorEve
 
         displayMaxValues();
 
-        magnitudeAcc = ((float) Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2])) - G;
+        magnitudeAcc = ((float) Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2])) - MainActivity.G;
 
-        if (magnitudeAcc > MAGNITUDE_ACC_THRESHOLD && dBValue > dB_VALUE_THRESHOLD && speed > SPEED_THRESHOLD) {
+        if (magnitudeAcc > MainActivity.MAGNITUDE_ACC_THRESHOLD && dBValue > MainActivity.dB_VALUE_THRESHOLD && speed > MainActivity.SPEED_THRESHOLD) {
             countAccidentFlag++;
             if (countAccidentFlag == 1) {
                 startAlarmActivity();
             }
         }
 
-        // get the change of the x,y,z values of the accelerometer
         deltaX = Math.abs(lastX - event.values[0]);
         deltaY = Math.abs(lastY - event.values[1]);
         deltaZ = Math.abs(lastZ - event.values[2]);
 
-        // if the change is below 2, it is just plain noise
+
         if (deltaX < 2)
             deltaX = 0;
         if (deltaY < 2)
@@ -193,7 +176,6 @@ public class SensorDetailActivity extends AppCompatActivity implements SensorEve
         if (deltaZ < 2)
             deltaZ = 0;
 
-        // set the last know values of x,y,z
         lastX = event.values[0];
         lastY = event.values[1];
         lastZ = event.values[2];
@@ -206,11 +188,11 @@ public class SensorDetailActivity extends AppCompatActivity implements SensorEve
 
     private void startAlarmActivity() {
         Intent intentAlarmActivity = new Intent(this, AlarmActivity.class);
-        intentAlarmActivity.putExtra(KEY_LONGITUDE, String.valueOf(l1));
-        intentAlarmActivity.putExtra(KEY_LATITUDE, String.valueOf(l2));
-        intentAlarmActivity.putExtra(KEY_VOLUME, String.valueOf(dBValue));
-        intentAlarmActivity.putExtra(KEY_MAX_ACCELERATION_MAGNITUDE, String.valueOf(magnitudeAcc));
-        intentAlarmActivity.putExtra(SPEED, String.valueOf(speed));
+        intentAlarmActivity.putExtra(MainActivity.KEY_LONGITUDE, String.valueOf(l1));
+        intentAlarmActivity.putExtra(MainActivity.KEY_LATITUDE, String.valueOf(l2));
+        intentAlarmActivity.putExtra(MainActivity.KEY_VOLUME, String.valueOf(dBValue));
+        intentAlarmActivity.putExtra(MainActivity.KEY_MAX_ACCELERATION_MAGNITUDE, String.valueOf(magnitudeAcc));
+        intentAlarmActivity.putExtra(MainActivity.SPEED, String.valueOf(speed));
         startActivity(intentAlarmActivity);
     }
 
@@ -241,7 +223,7 @@ public class SensorDetailActivity extends AppCompatActivity implements SensorEve
     }
 
     public void updateTv() {
-        dBValue = soundDb(REFRENCE_AMPLITUDE);
+        dBValue = soundDb(MainActivity.REFRENCE_AMPLITUDE);
         dBValueView.setText(String.format("%.2f dB", dBValue));
     }
 
@@ -273,9 +255,10 @@ public class SensorDetailActivity extends AppCompatActivity implements SensorEve
     }
 
     public void displayLocalization() {
-        changeL.setText(Double.toString(loc.getLongitude()));
+//        changeL.setText(Double.toString(loc.getLongitude()));
+        changeL.setText(String.format("%.6f", loc.getLongitude()));
 
-        changeW.setText(Double.toString(loc.getLatitude()));
+        changeW.setText(String.format("%.6f", loc.getLatitude()));
     }
 
 
@@ -283,9 +266,11 @@ public class SensorDetailActivity extends AppCompatActivity implements SensorEve
     public void onLocationChanged(Location location) {
         refresh();
         displayLocalization();
-        displaySpeed();
         //predkosc
         locationSpeed();
+        displaySpeed();
+
+
         if (loc != null) {
             l1 = loc.getLongitude();
             l2 = loc.getLatitude();
