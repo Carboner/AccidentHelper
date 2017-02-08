@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AccidentHelper</string>
+    <string name="info_header0">AccidentHelper was designed to detect car accidents using the internal sensors of your smartphone. App sends an emergency notification to your predetermined emergency numbers and to web server.</string>
 </resources>

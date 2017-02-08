@@ -136,7 +136,7 @@ public class AlarmActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        Toast.makeText(AlarmActivity.this, volleyError.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(AlarmActivity.this, "Check Internet connection to send data to server", Toast.LENGTH_LONG).show();
                     }
                 }) {
             @Override

@@ -1,8 +1,10 @@
 package com.example.konrad.accidenthelper;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -18,6 +20,7 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
 
 import java.io.IOException;
 
@@ -35,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     String najlepszyDostawca;
     double difference, l1, l2, l3, l4;
     float speed;
+
+    private SharedPreferences sharedPreferences;
 
     public static final float G = SensorManager.GRAVITY_EARTH;
     public static final double REFRENCE_AMPLITUDE = Math.pow(10, Math.exp(-7));
@@ -100,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             ;
 
         lm.requestLocationUpdates(najlepszyDostawca, 1000, 1, this);
+
+        sharedPreferences = getSharedPreferences(SettingsActivity.PREFERENCES_FILE, Context.MODE_PRIVATE);
     }
 
     protected void onResume() {
@@ -107,6 +114,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         startRecorder();
         countAccidentFlag = 0;
+        if (sharedPreferences.getBoolean("first_run", true)) {
+            showFirstRunDialog();
+            sharedPreferences.edit().putBoolean("first_run", false).commit();
+        }
     }
 
     protected void onPause() {
@@ -232,6 +243,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return speed;
     }
 
+    private void showFirstRunDialog() {
+        Dialog infoDialog = new Dialog(this);
+        infoDialog.setCancelable(true);
+        infoDialog.setCanceledOnTouchOutside(true);
+
+        infoDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        infoDialog.setContentView(getLayoutInflater().inflate(R.layout.first_run_info_dialog, null));
+
+        infoDialog.show();
+    }
 
     //LocationListener
     @Override

@@ -33,7 +33,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed"
-                        android:text="@string/app_name"
+                        android:text="Welcome in "
                         android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
@@ -42,7 +42,7 @@
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/label_sensor_name"
                         android:fontFamily="sans-serif-condensed"
-                        android:text=" Info"
+                        android:text="@string/app_name"
                         android:textAppearance="?android:attr/textAppearanceLarge" />
                 </RelativeLayout>
             </RelativeLayout>
@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:text="AccidentHelper was designed to detect car accidents using the internal sensors of your smartphone. App sends an emergency notification to your predetermined emergency numbers and to web server."
+                android:text="@string/info_header0"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold" />
 
