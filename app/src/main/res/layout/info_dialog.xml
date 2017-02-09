@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:text="AccidentHelper was designed to detect car accidents using the internal sensors of your smartphone. App sends an emergency notification to your predetermined emergency numbers and to web server."
+                android:text="@string/info_header0"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold" />
 
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:text="Application utilizes such a sensor as: Accelerometer and GPS. Additionally, it measures sound intensity level in decibels. All this measurement informations are processed in accident detection algorithm, which decides if accident occurred or not."
+                android:text="@string/info_header1"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold" />
 
@@ -72,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:text="When algorithm detects accident alarm screen appears and you have 20 seconds to cancel alarm if you don't do that the notification will be send."
+                android:text="@string/info_header2"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold" />
 
@@ -82,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:text="The notification includes all measured data in time when accident take place. This information can be helpful to determine localization of event."
+                android:text="@string/info_header3"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold" />
 
@@ -91,7 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:text="If you want to enable SMS notification (disabled by default) you should go to Settings and there enter emergency numbers."
+                android:text="@string/info_header4"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold" />
 
@@ -100,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:text="Beyond the main function of this app, you can check actual measuring values, to do that, click sensor details button."
+                android:text="@string/info_header5"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold" />
 
