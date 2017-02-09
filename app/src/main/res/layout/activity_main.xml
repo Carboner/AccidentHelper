@@ -1,27 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="#ffffff"
+    android:background="@drawable/backgrd"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingTop="20dp">
-
+    android:paddingTop="20dp"
+    android:weightSum="1">
 
     <Button
         android:id="@+id/settings_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Settings"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:background="@drawable/buttonshape"
         android:onClick="onClickSettings"
-        android:text="Settings" />
+        android:shadowColor="#2E2D2B"
+        android:shadowDx="0"
+        android:shadowDy="20"
+        android:shadowRadius="20"
+        android:layout_marginTop="200dp"
+        android:layout_marginRight="30dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="37dp"
+        android:alpha="0.7" />
 
     <Button
         android:id="@+id/sensor_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Sensors"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:background="@drawable/buttonshape"
         android:onClick="onClickSensorDetails"
-        android:text="Sensor details" />
+        android:shadowColor="#2E2D2B"
+        android:shadowDx="0"
+        android:layout_marginTop="200dp"
+        android:shadowDy="20"
+        android:shadowRadius="20"
+        android:layout_alignBaseline="@+id/settings_button"
+        android:layout_alignBottom="@+id/settings_button"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="51dp"
+        android:alpha="0.7" />
 
 
-</LinearLayout>
+</RelativeLayout>
