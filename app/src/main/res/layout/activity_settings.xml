@@ -10,6 +10,14 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="Insert phone numbers of two people who should be informed in case of accident." />
+
     <EditText
         android:id="@+id/phone1"
         android:layout_width="wrap_content"
@@ -56,6 +64,16 @@
         android:text="Phone 2"
         android:textSize="16sp" />
 
+    <Switch
+        android:id="@+id/switch_sms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="19dp"
+        android:onClick="onClickSwitch"
+        android:switchPadding="40dp"
+        android:text="Enable SMS warning" />
 
     <Button
         android:id="@+id/button_about_app"
@@ -74,31 +92,10 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/button_about_app"
         android:layout_alignEnd="@+id/phone2"
-        android:layout_marginBottom="140dp"
+        android:layout_marginBottom="90dp"
         android:onClick="onClickSaveNumbers"
         android:text="SAVE SETTINGS"
         android:textSize="16sp" />
-
-    <Switch
-        android:id="@+id/switch_sms"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
-        android:onClick="onClickSwitch"
-        android:switchPadding="40dp"
-        android:text="Enable SMS warning" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView1"
-        android:layout_alignLeft="@id/textView1"
-        android:layout_marginBottom="30dp"
-        android:gravity="center"
-        android:text="Enter two emergency numbers: " />
 
 
 </RelativeLayout>
