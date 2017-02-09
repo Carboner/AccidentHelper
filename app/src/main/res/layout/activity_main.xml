@@ -8,8 +8,17 @@
     android:background="@drawable/backgrd"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingTop="20dp"
     android:weightSum="1">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:src="@drawable/logo"
+        android:paddingLeft="180dp"
+        android:paddingBottom="50dp"
+        android:layout_alignParentTop="true"
+        android:elevation="0dp"
+        android:alpha="0.9" />
 
     <Button
         android:id="@+id/settings_button"
