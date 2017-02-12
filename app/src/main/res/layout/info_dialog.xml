@@ -58,6 +58,15 @@
 
 
             <TextView
+                android:id="@+id/text_header_introduction_01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/info_header01"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textStyle="bold" />
+
+            <TextView
                 android:id="@+id/text_header_introduction_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

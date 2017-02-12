@@ -56,35 +56,15 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold" />
 
-
             <TextView
-                android:id="@+id/text_header_introduction_1"
+                android:id="@+id/text_header_introduction_01"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:text="@string/info_header1"
+                android:text="@string/info_header01"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold" />
 
-
-            <TextView
-                android:id="@+id/text_header_introduction_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="@string/info_header2"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold" />
-
-
-            <TextView
-                android:id="@+id/text_header_introduction_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="@string/info_header3"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/text_header_introduction_4"

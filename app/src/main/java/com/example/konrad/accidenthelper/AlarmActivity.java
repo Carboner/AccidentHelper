@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -65,10 +64,6 @@ public class AlarmActivity extends AppCompatActivity {
         phone2 = sharedPreferences.getString("phone_2", null);
         sendSMSBool = sharedPreferences.getBoolean("sendSMSWarning", false);
 
-        Log.d("AlarmActivity", phone1);
-        Log.d("AlarmActivity", phone2);
-        Log.d("AlarmActivity", String.valueOf(sendSMSBool));
-
         startTimer();
     }
 
@@ -87,7 +82,15 @@ public class AlarmActivity extends AppCompatActivity {
                 sendData();
 
                 if (sendSMSBool) {
-                    sendSMS();
+                    if (phone1 != null && phone1.length() > 1) {
+//                        Log.d("Phone1", "Phone1: " + phone1 + " dl " + phone1.length());
+                        sendSMS1();
+                    }
+                    if (phone2 != null && phone2.length() > 1) {
+//                        Log.d("Phone2", "Phone2: " + phone2 + " dl " + phone2.length());
+                        sendSMS2();
+                    }
+
                 }
 
             }
@@ -104,12 +107,25 @@ public class AlarmActivity extends AppCompatActivity {
 
     }
 
-    protected void sendSMS() {
+    protected void sendSMS1() {
         final String longitude = longitudeIntent;
         final String latitude = latitudeIntent;
 
         SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(phone1, null, "wypadek w " + longitude + " " + latitude + " z predkością " + speed, null, null);
+        smsManager.sendTextMessage(phone1, null, "I had an accident in " + longitude + " " + latitude + " with speed " + speed + ". \nCheck localization with google maps: \nhttp://maps.google.com/?q=" + latitude + "," + longitude, null, null);
+
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+
+        sendIntent.setType("vnd.android-dir/mms-sms");
+        startActivity(sendIntent);
+    }
+
+    protected void sendSMS2() {
+        final String longitude = longitudeIntent;
+        final String latitude = latitudeIntent;
+
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(phone2, null, "I had an accident in " + longitude + " " + latitude + " with speed " + speed + ". \nCheck localization with google maps: \nhttp://maps.google.com/?q=" + latitude + "," + longitude, null, null);
 
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
 
