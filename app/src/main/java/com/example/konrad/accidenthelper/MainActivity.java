@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public static final float G = SensorManager.GRAVITY_EARTH;
     public static final double REFRENCE_AMPLITUDE = Math.pow(10, Math.exp(-7));
-    public static final float MAGNITUDE_ACC_THRESHOLD = 1 * SensorManager.GRAVITY_EARTH;
-    public static final int dB_VALUE_THRESHOLD = 60;
-    public static final int SPEED_THRESHOLD = -1;
+    public static final float MAGNITUDE_ACC_THRESHOLD = 4 * SensorManager.GRAVITY_EARTH;
+    public static final int dB_VALUE_THRESHOLD = 130;
+    public static final int SPEED_THRESHOLD = 25;
 
     public static final String KEY_LONGITUDE = "longitude";
     public static final String KEY_LATITUDE = "latitude";

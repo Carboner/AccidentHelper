@@ -29,7 +29,7 @@ public class AlarmActivity extends AppCompatActivity {
     private Button cancelButtonView;
 
     private CountDownTimer countDownTimer;
-    private static final int TIME_TO_CANCEL = 5;
+    private static final int TIME_TO_CANCEL = 15;
 
     private String longitudeIntent;
     private String latitudeIntent;
